@@ -42,12 +42,6 @@ void loop() {
   if (Serial.available() > 0) {
     Serial.readBytes(receivedEncrypted, 128);
 
-    for (int i = 0; i < 128; i++) {
-      Serial.print(receivedEncrypted[i], HEX);
-      Serial.print(" ");
-    }
-    Serial.println();
-
     byte decrypted[156];
     int decryptedLength = decryptMessage(receivedEncrypted, 128, decrypted);
 
