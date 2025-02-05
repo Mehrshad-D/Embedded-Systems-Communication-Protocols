@@ -7,7 +7,7 @@ This project compares the performance of different communication protocols for d
 - **I2C (Inter-Integrated Circuit)**
 - **SPI (Serial Peripheral Interface)**
 - **UART (Universal Asynchronous Receiver-Transmitter)**
-- **Wi-Fi (ESP8266/ESP32)**
+- **Wi-Fi (ESP8266 module)**
 - **CAN (Controller Area Network)**
 - **One-Wire Protocol**
 
