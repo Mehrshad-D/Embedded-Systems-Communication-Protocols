@@ -2,6 +2,8 @@
 #include <WiFiClient.h>
 #include <AES.h>
 
+#define PULSE_PIN 3
+
 const char* ssid = "Your_SSID";
 const char* password = "Your_PASSWORD";
 const char* serverIP = "192.168.1.100"; // Receiver's IP
@@ -23,13 +25,17 @@ byte iv[16] = {
   0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F
 };
 
-char message[128] = "This is a secure message over WiFi with AES encryption.";
+char message[128] = "This is a 128-character message. It needs to be exactly 128 characters long to fit the requirement. salam salam hamegi salam. b";
 
 byte encrypted[128];
 AES aes;
 
 void setup() {
   Serial.begin(115200);
+
+  pinMode(PULSE_PIN, OUTPUT);
+  digitalWrite(PULSE_PIN, LOW);
+
   WiFi.begin(ssid, password);
 
   while (WiFi.status() != WL_CONNECTED) {
@@ -43,6 +49,10 @@ void setup() {
 void loop() {
   if (client.connect(serverIP, serverPort)) {
     Serial.println("Connected to receiver!");
+
+    digitalWrite(PULSE_PIN, HIGH);
+    delayMicroseconds(100);
+    digitalWrite(PULSE_PIN, LOW);
     
     int encryptedLength = encryptMessage((byte*)message, strlen(message), encrypted);
     unsigned long startTime = millis();
