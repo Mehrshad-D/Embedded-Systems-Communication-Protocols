@@ -2,6 +2,9 @@
 #include <WiFiServer.h>
 #include <AES.h>
 
+#define PULSE_PIN 3
+volatile unsigned long pulseTime = 0;
+
 const char* ssid = "Your_SSID";
 const char* password = "Your_PASSWORD";
 
@@ -24,8 +27,16 @@ byte iv[16] = {
 byte receivedEncrypted[128];
 AES aes;
 
+void pulseISR() {
+  pulseTime = micros();
+}
+
 void setup() {
   Serial.begin(115200);
+
+  pinMode(PULSE_PIN, INPUT);
+  attachInterrupt(digitalPinToInterrupt(PULSE_PIN), pulseISR, RISING);
+
   WiFi.begin(ssid, password);
 
   while (WiFi.status() != WL_CONNECTED) {
@@ -42,7 +53,6 @@ void loop() {
   WiFiClient client = server.available();
 
   if (client) {
-    Serial.println("Client connected!");
     unsigned long startTime = millis();
     int index = 0;
 
@@ -58,8 +68,10 @@ void loop() {
     byte decrypted[128];
     int decryptedLength = decryptMessage(receivedEncrypted, index, decrypted);
 
+    unsigned long receiveTime = micros();
+    unsigned long transmissionTime = receiveTime - pulseTime;
     Serial.print("Transmission Time: ");
-    Serial.println(endTime - startTime);
+    Serial.println(transmissionTime);
 
     if (decryptedLength > 0) {
       Serial.print("Decrypted message: ");
